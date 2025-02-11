@@ -36,8 +36,8 @@ const ReviewCard = ({ currency, price, date }: Currency) => {
 export function MarqueeDemo() {
 	return (
 		<Marquee pauseOnHover className="[--duration:90s]">
-			{currencyData.map((item) => (
-				<ReviewCard key={item.currency} {...item} />
+			{currencyData.map((item, index) => (
+				<ReviewCard key={index} {...item} />
 			))}
 		</Marquee>
 	)

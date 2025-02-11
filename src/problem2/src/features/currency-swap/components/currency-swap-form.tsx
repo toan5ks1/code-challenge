@@ -1,5 +1,6 @@
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
 import { z } from "zod"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -11,10 +12,10 @@ import {
 	CardDescription,
 	CardContent,
 } from "@/components/ui/card"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { CurrencyCombobox } from "./currency-combobox"
 import { currencyData } from "../data/currency"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, Loader2 } from "lucide-react"
 import { ShineBorder } from "@/components/magic-ui/shine-border"
 
 // Zod schema for form validation
@@ -44,12 +45,14 @@ export default function CurrencySwapForm() {
 	} = useForm<FormValues>({
 		resolver: zodResolver(schema),
 		defaultValues: {
-			fromCurrency: undefined,
-			toCurrency: undefined,
+			fromCurrency: currencyData[0],
+			toCurrency: currencyData[1],
 			amountToSend: 0,
 			amountToReceive: 0,
 		},
 	})
+
+	const [isSubmitting, setIsSubmitting] = useState(false)
 
 	const fromCurrency = watch("fromCurrency")
 	const toCurrency = watch("toCurrency")
@@ -64,10 +67,14 @@ export default function CurrencySwapForm() {
 		}
 	}, [fromCurrency, toCurrency, amountToSend, setValue])
 
-	const onSubmit = (data: FormValues) => {
-		console.log("Form submitted:", data)
-		console.log(errors)
-		// Add logic to handle currency swap here
+	const onSubmit = async (data: FormValues) => {
+		setIsSubmitting(true)
+		setTimeout(() => {
+			setIsSubmitting(false) // Reset loading state after timeout
+			toast.success("Swap successfully!", {
+				description: `Amount to receive: ${data.amountToReceive}`,
+			})
+		}, 1000)
 	}
 
 	const handleSwap = () => {
@@ -170,7 +177,8 @@ export default function CurrencySwapForm() {
 								</div>
 							</div>
 						</div>
-						<Button type="submit" className="w-full">
+						<Button type="submit" className="w-full" disabled={isSubmitting}>
+							{isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
 							Swap
 						</Button>
 					</form>

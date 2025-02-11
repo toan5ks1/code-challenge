@@ -1,5 +1,6 @@
 import { SiteHeader } from "@/components/site-header"
 import { useRoutes } from "react-router-dom"
+import { Toaster } from "@/components/ui/toaster"
 import { TailwindIndicator } from "./components/tailwind-indicator"
 import Home from "./pages/home"
 
@@ -14,6 +15,7 @@ function App() {
 				<SiteHeader />
 				<div className="flex-1">{children}</div>
 			</div>
+			<Toaster />
 			<TailwindIndicator />
 		</>
 	)
