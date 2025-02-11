@@ -1,6 +1,7 @@
-# React + TypeScript + Vite + Shadcn template
+# Crypto currency swapper
 
-A React + TypeScript + Vite + Shadcn template for building apps with Radix UI and Tailwind CSS.
+- React + TypeScript + Vite + Shadcn + tailwind CSS
+  ![alt text](crypto-swap.png)
 
 ## Usage
 

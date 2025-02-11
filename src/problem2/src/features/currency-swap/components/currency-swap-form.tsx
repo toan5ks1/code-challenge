@@ -15,6 +15,7 @@ import { useEffect } from "react"
 import { CurrencyCombobox } from "./currency-combobox"
 import { currencyData } from "../data/currency"
 import { ArrowUpDown } from "lucide-react"
+import { ShineBorder } from "@/components/magic-ui/shine-border"
 
 // Zod schema for form validation
 const schema = z.object({
@@ -76,100 +77,105 @@ export default function CurrencySwapForm() {
 	}
 
 	return (
-		<Card className="mx-auto mt-10 max-w-md">
-			<CardHeader>
-				<CardTitle>Currency Swap</CardTitle>
-				<CardDescription>
-					Swap assets from one currency to another.
-				</CardDescription>
-			</CardHeader>
-			<CardContent>
-				<form onSubmit={handleSubmit(onSubmit)}>
-					<div className="relative mb-6 space-y-6">
-						<div className="flex space-x-2">
-							<div className="w-28">
-								<Label htmlFor="fromCurrency">From currency</Label>
-								<Controller
-									name="fromCurrency"
-									control={control}
-									render={({ field }) => (
-										<CurrencyCombobox
-											data={currencyData}
-											value={field.value}
-											onChange={field.onChange}
-											placeholder="Select currency"
-										/>
+		<Card className="mx-auto mt-10 max-w-md border-none">
+			<ShineBorder
+				className="relative w-full rounded-lg text-left"
+				color={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
+			>
+				<CardHeader>
+					<CardTitle>Currency Swap</CardTitle>
+					<CardDescription>
+						Swap assets from one currency to another.
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<form onSubmit={handleSubmit(onSubmit)}>
+						<div className="relative mb-6 space-y-6">
+							<div className="flex space-x-2">
+								<div className="w-28">
+									<Label htmlFor="fromCurrency">From currency</Label>
+									<Controller
+										name="fromCurrency"
+										control={control}
+										render={({ field }) => (
+											<CurrencyCombobox
+												data={currencyData}
+												value={field.value}
+												onChange={field.onChange}
+												placeholder="Select currency"
+											/>
+										)}
+									/>
+									{errors.fromCurrency && (
+										<p className="text-sm text-red-500">
+											{errors.fromCurrency.message}
+										</p>
 									)}
-								/>
-								{errors.fromCurrency && (
-									<p className="text-sm text-red-500">
-										{errors.fromCurrency.message}
-									</p>
-								)}
-							</div>
-							<div className="flex-1">
-								<Label htmlFor="amountToSend">Amount to Send</Label>
-								<Input
-									type="number"
-									id="amountToSend"
-									{...register("amountToSend", { valueAsNumber: true })}
-									placeholder="Enter amount"
-								/>
-								{errors.amountToSend && (
-									<p className="text-sm text-red-500">
-										{errors.amountToSend.message}
-									</p>
-								)}
-							</div>
-						</div>
-
-						<div className="absolute -left-6 top-[35%] -translate-x-1/2 -translate-y-1/2">
-							<Button
-								size="icon"
-								variant="outline"
-								className="rounded-full"
-								onClick={handleSwap}
-							>
-								<ArrowUpDown className="size-4" />
-							</Button>
-						</div>
-
-						<div className="flex space-x-2">
-							<div className="w-28">
-								<Label htmlFor="toCurrency">To currency</Label>
-								<Controller
-									name="toCurrency"
-									control={control}
-									render={({ field }) => (
-										<CurrencyCombobox
-											data={currencyData}
-											value={field.value}
-											onChange={field.onChange}
-											placeholder="Select currency"
-										/>
+								</div>
+								<div className="flex-1">
+									<Label htmlFor="amountToSend">Amount to Send</Label>
+									<Input
+										type="number"
+										id="amountToSend"
+										{...register("amountToSend", { valueAsNumber: true })}
+										placeholder="Enter amount"
+									/>
+									{errors.amountToSend && (
+										<p className="text-sm text-red-500">
+											{errors.amountToSend.message}
+										</p>
 									)}
-								/>
-								{errors.toCurrency && (
-									<p className="text-red-500">{errors.toCurrency.message}</p>
-								)}
+								</div>
 							</div>
-							<div className="flex-1">
-								<Label htmlFor="amountToReceive">Amount to Receive</Label>
-								<Input
-									type="number"
-									id="amountToReceive"
-									{...register("amountToReceive", { valueAsNumber: true })}
-									placeholder="Calculated amount"
-									readOnly
-								/>
+
+							<div className="absolute -left-6 top-[35%] -translate-x-1/2 -translate-y-1/2">
+								<Button
+									size="icon"
+									variant="outline"
+									className="rounded-full"
+									onClick={handleSwap}
+								>
+									<ArrowUpDown className="size-4" />
+								</Button>
+							</div>
+
+							<div className="flex space-x-2">
+								<div className="w-28">
+									<Label htmlFor="toCurrency">To currency</Label>
+									<Controller
+										name="toCurrency"
+										control={control}
+										render={({ field }) => (
+											<CurrencyCombobox
+												data={currencyData}
+												value={field.value}
+												onChange={field.onChange}
+												placeholder="Select currency"
+											/>
+										)}
+									/>
+									{errors.toCurrency && (
+										<p className="text-red-500">{errors.toCurrency.message}</p>
+									)}
+								</div>
+								<div className="flex-1">
+									<Label htmlFor="amountToReceive">Amount to Receive</Label>
+									<Input
+										type="number"
+										id="amountToReceive"
+										{...register("amountToReceive", { valueAsNumber: true })}
+										placeholder="Calculated amount"
+										readOnly
+									/>
+								</div>
 							</div>
 						</div>
-					</div>
-					<Button type="submit" className="w-full">
-						Swap
-					</Button>
-				</form>
-			</CardContent>
+						<Button type="submit" className="w-full">
+							Swap
+						</Button>
+					</form>
+				</CardContent>
+			</ShineBorder>
 		</Card>
 	)
 }
