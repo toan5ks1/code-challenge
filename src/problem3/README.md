@@ -3,21 +3,12 @@
 ### **1\. Incorrect Variable Reference in `sortedBalances` Filtering**
 
 - **Issue:**
-
-  ts
-
-  CopyEdit
-
-  `if (lhsPriority > -99) {`
+- `if (lhsPriority > -99) {`
 
   The variable `lhsPriority` is not defined in the scope. This will cause a runtime error.
 
 - **Fix:**\
   The correct variable should be `balancePriority`:
-
-  ts
-
-  CopyEdit
 
   `if (balancePriority > -99) {`
 
@@ -27,11 +18,8 @@
 
 - **Issue:**
 
-  ts
-
-  CopyEdit
-
-  `return balances.filter((balance: WalletBalance) => {
+```
+return balances.filter((balance: WalletBalance) => {
     const balancePriority = getPriority(balance.blockchain);
     if (balancePriority > -99) {
        if (balance.amount <= 0) {
@@ -39,20 +27,19 @@
        }
     }
     return false;
-})`
+})
+```
 
-  - This filtering logic returns **only balances with `amount <= 0`** when their priority is above `-99`, which seems incorrect.
-  - Likely, the intention was to **remove balances with amount `<= 0`**.
+- This filtering logic returns **only balances with `amount <= 0`** when their priority is above `-99`, which seems incorrect.
+- Likely, the intention was to **remove balances with amount `<= 0`**.
 
 - **Fix:**
 
-  ts
-
-  CopyEdit
-
-  `return balances.filter(
+```
+return balances.filter(
   (balance) => getPriority(balance.blockchain) > -99 && balance.amount > 0
-);`
+);
+```
 
 ---
 
@@ -60,20 +47,12 @@
 
 - **Issue:**
 
-  ts
-
-  CopyEdit
-
   `}, [balances, prices]);`
 
   - `prices` are included as a dependency in `useMemo`, **but they are not used** inside the memoization.
   - Including unnecessary dependencies can cause unnecessary re-renders.
 
 - **Fix:**
-
-  ts
-
-  CopyEdit
 
   `}, [balances]);`
 
@@ -83,19 +62,17 @@
 
 - **Issue:**
 
-  ts
-
-  CopyEdit
-
-  `const formattedBalances = sortedBalances.map((balance: WalletBalance) => {
+```
+const formattedBalances = sortedBalances.map((balance: WalletBalance) => {
   return {
     ...balance,
     formatted: balance.amount.toFixed()
   }
-})`
+})
+```
 
-  - This creates **an additional array (`formattedBalances`)**, but the formatted value is only used in `rows`.
-  - We can **format the data inside the same `.map()` call** that generates `rows`, avoiding an unnecessary array creation.
+- This creates **an additional array (`formattedBalances`)**, but the formatted value is only used in `rows`.
+- We can **format the data inside the same `.map()` call** that generates `rows`, avoiding an unnecessary array creation.
 
 - **Fix:**\
   Move the formatting logic inside the `rows` mapping.
@@ -105,10 +82,6 @@
 ### **5\. Incorrect Type in `rows.map()`**
 
 - **Issue:**
-
-  ts
-
-  CopyEdit
 
   `const rows = sortedBalances.map((balance: FormattedWalletBalance, index: number) => {`
 
@@ -123,21 +96,12 @@
 ### **6\. Using Array Index as Key in `.map()`**
 
 - **Issue:**
-
-  ts
-
-  CopyEdit
-
   `key={index}`
 
   - Using the index as a key is an **anti-pattern in React** because it can lead to **incorrect re-rendering** when the array order changes.
 
 - **Fix:**\
   Use a unique identifier, such as `balance.currency`:
-
-  ts
-
-  CopyEdit
 
   `key={balance.currency}`
 
@@ -147,10 +111,6 @@
 
 - **Issue:**
 
-  ts
-
-  CopyEdit
-
   `const usdValue = prices[balance.currency] * balance.amount;`
 
   - If `prices[balance.currency]` is **undefined**, this can result in `NaN`.
@@ -158,69 +118,63 @@
 - **Fix:**\
   Use optional chaining and a fallback:
 
-  ts
-
-  CopyEdit
-
   `const usdValue = (prices[balance.currency] ?? 0) * balance.amount;`
 
 ## **Refactored Code**
 
-Here's a more optimized and cleaner version:
-
-tsx
-
-CopyEdit
-
-`interface WalletBalance {
-currency: string;
-amount: number;
-blockchain: string;
+```tsx
+interface WalletBalance {
+  currency: string;
+  amount: number;
+  blockchain: string;
 }
 
 interface Props extends BoxProps {}
 
 const WalletPage: React.FC<Props> = (props: Props) => {
-const { children, ...rest } = props;
-const balances = useWalletBalances();
-const prices = usePrices();
+  const { children, ...rest } = props;
+  const balances = useWalletBalances();
+  const prices = usePrices();
 
-const getPriority = (blockchain: string): number => {
-const priorityMap: Record<string, number> = {
-Osmosis: 100,
-Ethereum: 50,
-Arbitrum: 30,
-Zilliqa: 20,
-Neo: 20,
-};
-return priorityMap[blockchain] ?? -99;
-};
+  const getPriority = (blockchain: string): number => {
+    const priorityMap: Record<string, number> = {
+      Osmosis: 100,
+      Ethereum: 50,
+      Arbitrum: 30,
+      Zilliqa: 20,
+      Neo: 20,
+    };
+    return priorityMap[blockchain] ?? -99;
+  };
 
-const sortedBalances = useMemo(() => {
-return balances
-.filter((balance) => getPriority(balance.blockchain) > -99 && balance.amount > 0)
-.sort((lhs, rhs) => getPriority(rhs.blockchain) - getPriority(lhs.blockchain));
-}, [balances]);
+  const sortedBalances = useMemo(() => {
+    return balances
+      .filter(
+        (balance) => getPriority(balance.blockchain) > -99 && balance.amount > 0
+      )
+      .sort(
+        (lhs, rhs) => getPriority(rhs.blockchain) - getPriority(lhs.blockchain)
+      );
+  }, [balances]);
 
-return (
-<div {...rest}>
-{sortedBalances.map((balance) => {
-const usdValue = (prices[balance.currency] ?? 0) \* balance.amount;
-return (
-<WalletRow
+  return (
+    <div {...rest}>
+      {sortedBalances.map((balance) => {
+        const usdValue = (prices[balance.currency] ?? 0) * balance.amount;
+        return (
+          <WalletRow
             className={classes.row}
             key={balance.currency}
             amount={balance.amount}
             usdValue={usdValue}
             formattedAmount={balance.amount.toFixed()}
           />
-);
-})}
-</div>
-);
-};`
-
----
+        );
+      })}
+    </div>
+  );
+};
+```
 
 ## **Key Improvements**
 
